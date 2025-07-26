@@ -1,3 +1,5 @@
+const FALLBACK_SVG = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect fill='%23f0f4f8' width='400' height='300'/><circle fill='%23667eea' cx='200' cy='150' r='80'/><text x='200' y='155' text-anchor='middle' fill='white' font-size='16'>Sepeda</text></svg>`;
+
 const products = [
     {
         id: 1,
@@ -94,25 +96,68 @@ const products = [
         category: "road",
         image: "images/sepeda12.jpg",
         description: "Sepeda balap ringan dan kaku, ideal untuk pemula hingga menengah yang ingin kecepatan maksimal."
-}
-
-    
-
+    }
 ];
-
 
 let cart = [];
 
-
 document.addEventListener('DOMContentLoaded', function() {
     displayProducts(products);
+    loadCartFromStorage();
     updateCartCount();
     addNotificationStyles();
+    initializeMenuToggle();
+    initializeSearch();
 });
 
+function initializeMenuToggle() {
+    const menuToggle = document.getElementById('menuToggle');
+    const navMenu = document.getElementById('navMenu');
+
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('show');
+            }
+        });
+    }
+}
+
+function initializeSearch() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
+    }
+}
+
+function handleSearch(event) {
+    const searchTerm = event.target.value.toLowerCase();
+    let filteredProducts;
+
+    if (searchTerm === '') {
+        filteredProducts = products;
+    } else {
+        filteredProducts = products.filter(product => 
+            product.name.toLowerCase().includes(searchTerm) ||
+            product.description.toLowerCase().includes(searchTerm) ||
+            product.category.toLowerCase().includes(searchTerm)
+        );
+    }
+
+    displayProducts(filteredProducts);
+    
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+}
 
 function addNotificationStyles() {
+    if (document.getElementById('notification-styles')) return;
+    
     const style = document.createElement('style');
+    style.id = 'notification-styles';
     style.textContent = `
         .simple-notification {
             position: fixed;
@@ -193,7 +238,6 @@ function addNotificationStyles() {
             }
         }
 
-        /* Enhanced product image styles */
         .product-image {
             width: 100%;
             height: 200px;
@@ -206,7 +250,6 @@ function addNotificationStyles() {
             transform: scale(1.02);
         }
 
-        /* Loading state for images */
         .product-image-loading {
             background: linear-gradient(90deg, #f0f4f8 25%, #e3e8ef 50%, #f0f4f8 75%);
             background-size: 200% 100%;
@@ -217,48 +260,75 @@ function addNotificationStyles() {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        .search-container {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 0.75rem 2.5rem 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: #1d3557;
+        }
+
+        .search-container i {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
     `;
     document.head.appendChild(style);
 }
 
-
 function showNotification(title, message, type = 'success') {
-   
-    const existing = document.querySelector('.simple-notification');
-    if (existing) {
-        existing.remove();
-    }
+    try {
+        const existing = document.querySelector('.simple-notification');
+        if (existing) {
+            existing.remove();
+        }
 
-    const notification = document.createElement('div');
-    notification.className = 'simple-notification';
-    
-    const iconClass = type === 'success' ? 'fa-check-circle' : 
-                     type === 'warning' ? 'fa-exclamation-triangle' : 
-                     'fa-info-circle';
-    
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas ${iconClass} notification-icon"></i>
-            <div class="notification-text">
-                <div class="notification-title">${title}</div>
-                <div class="notification-message">${message}</div>
+        const notification = document.createElement('div');
+        notification.className = 'simple-notification';
+        
+        const iconClass = type === 'success' ? 'fa-check-circle' : 
+                         type === 'warning' ? 'fa-exclamation-triangle' : 
+                         'fa-info-circle';
+        
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${iconClass} notification-icon"></i>
+                <div class="notification-text">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <i class="fas fa-times notification-close" onclick="closeNotification()"></i>
             </div>
-            <i class="fas fa-times notification-close" onclick="closeNotification()"></i>
-        </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
-    
-    
-    setTimeout(() => {
-        closeNotification();
-    }, 3000);
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+            closeNotification();
+        }, 3000);
+    } catch (error) {
+        console.error('Error showing notification:', error);
+    }
 }
-
 
 function closeNotification() {
     const notification = document.querySelector('.simple-notification');
@@ -272,26 +342,28 @@ function closeNotification() {
     }
 }
 
-
 function displayProducts(productsToShow) {
     const productGrid = document.getElementById('productGrid');
+    if (!productGrid) return;
+    
     productGrid.innerHTML = '';
+
+    if (!productsToShow || productsToShow.length === 0) {
+        productGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 2rem; color: #666;">Tidak ada produk ditemukan.</p>';
+        return;
+    }
 
     productsToShow.forEach(product => {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
         
-        
-        const fallbackSVG = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect fill='%23f0f4f8' width='400' height='300'/><circle fill='%23667eea' cx='200' cy='150' r='80'/><text x='200' y='155' text-anchor='middle' fill='white' font-size='16'>Sepeda</text></svg>`;
-        
         productCard.innerHTML = `
             <div class="product-image-container">
                 <img src="${product.image}" 
                      alt="${product.name}" 
-                     class="product-image" 
+                     class="product-image product-image-loading" 
                      onload="this.classList.remove('product-image-loading')"
-                     onerror="this.src='${fallbackSVG}'; this.classList.remove('product-image-loading');"
-                     onloadstart="this.classList.add('product-image-loading')">
+                     onerror="this.src='${FALLBACK_SVG}'; this.classList.remove('product-image-loading');">
             </div>
             <div class="product-info">
                 <h3 class="product-title">${product.name}</h3>
@@ -308,11 +380,15 @@ function displayProducts(productsToShow) {
     });
 }
 
-
 function filterProducts(category) {
     const filterButtons = document.querySelectorAll('.filter-btn');
     filterButtons.forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.value = '';
+    }
 
     if (category === 'all') {
         displayProducts(products);
@@ -322,126 +398,168 @@ function filterProducts(category) {
     }
 }
 
-
 function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
-    const existingItem = cart.find(item => item.id === productId);
+    try {
+        const product = products.find(p => p.id === productId);
+        if (!product) {
+            showNotification('Error!', 'Produk tidak ditemukan', 'warning');
+            return;
+        }
 
-    if (existingItem) {
-        existingItem.quantity += 1;
-        showNotification('Berhasil!', `${product.name} jumlahnya ditambah di keranjang`);
-    } else {
-        cart.push({...product, quantity: 1});
-        showNotification('Ditambahkan!', `${product.name} berhasil ditambah ke keranjang`);
-    }
+        const existingItem = cart.find(item => item.id === productId);
 
-    updateCartCount();
-    
-    const button = event.target.closest('.btn-primary');
-    if (button) {
-        button.classList.add('btn-success-pulse');
-        setTimeout(() => {
-            button.classList.remove('btn-success-pulse');
-        }, 600);
+        if (existingItem) {
+            existingItem.quantity += 1;
+            showNotification('Berhasil!', `${product.name} jumlahnya ditambah di keranjang`);
+        } else {
+            cart.push({...product, quantity: 1});
+            showNotification('Ditambahkan!', `${product.name} berhasil ditambah ke keranjang`);
+        }
+
+        updateCartCount();
+        saveCartToStorage();
+        
+        const button = event.target.closest('.btn-primary');
+        if (button) {
+            button.classList.add('btn-success-pulse');
+            setTimeout(() => {
+                button.classList.remove('btn-success-pulse');
+            }, 600);
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showNotification('Error!', 'Gagal menambah ke keranjang', 'warning');
     }
 }
 
 function updateCartCount() {
     const cartCount = document.getElementById('cartCount');
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartCount.textContent = totalItems;
+    if (cartCount) {
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.textContent = totalItems;
+    }
 }
 
 function openCart() {
-  const modal = document.getElementById('cartModal');
-  const cartItems = document.getElementById('cartItems');
-  const cartTotal = document.getElementById('cartTotal');
+    try {
+        const modal = document.getElementById('cartModal');
+        const cartItems = document.getElementById('cartItems');
+        const cartTotal = document.getElementById('cartTotal');
 
-  if (!modal || !cartItems || !cartTotal) return;
+        if (!modal || !cartItems || !cartTotal) return;
 
-  cartItems.innerHTML = '';
-  let total = 0;
+        cartItems.innerHTML = '';
+        let total = 0;
 
-  if (cart.length === 0) {
-    cartItems.innerHTML = '<p style="text-align:center; padding: 2rem; color: #888;">Keranjang kosong</p>';
-  } else {
-    cart.forEach(item => {
-      total += item.price * item.quantity;
-      cartItems.innerHTML += `
-        <div class="cart-item">
-          <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-          <div>
-            <div class="cart-item-name">${item.name}</div>
-            <div class="cart-item-info">${item.quantity} x Rp ${item.price.toLocaleString('id-ID')}</div>
-          </div>
-          <button onclick="removeFromCart(${item.id})" class="cart-item-remove">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      `;
-    });
-  }
+        if (cart.length === 0) {
+            cartItems.innerHTML = '<p style="text-align:center; padding: 2rem; color: #888;">Keranjang kosong</p>';
+        } else {
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="this.src='${FALLBACK_SVG}'">
+                        <div>
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-info">${item.quantity} x Rp ${item.price.toLocaleString('id-ID')}</div>
+                            <div class="quantity-controls" style="margin-top: 0.5rem;">
+                                <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="quantity-btn">-</button>
+                                <span style="margin: 0 0.5rem;">${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="quantity-btn">+</button>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="cart-item-remove">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        }
 
-  cartTotal.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
-  modal.classList.add('show');
-}
-
-{
-
-  cartTotal.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
-  modal.classList.add('show');
+        cartTotal.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
+        modal.classList.add('show');
+    } catch (error) {
+        console.error('Error opening cart:', error);
+    }
 }
 
 function closeCart() {
-  const modal = document.getElementById('cartModal');
-  if (modal) {
-    modal.classList.remove('show');
-  }
+    const modal = document.getElementById('cartModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
 }
 
-
+function updateQuantity(productId, newQuantity) {
+    try {
+        const item = cart.find(item => item.id === productId);
+        if (item) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+            } else {
+                item.quantity = newQuantity;
+                updateCartCount();
+                saveCartToStorage();
+                openCart(); 
+            }
+        }
+    } catch (error) {
+        console.error('Error updating quantity:', error);
+    }
+}
 
 function removeFromCart(productId) {
-    const product = products.find(p => p.id === productId);
-    cart = cart.filter(item => item.id !== productId);
-    updateCartCount();
-    openCart(); 
-    showNotification('Dihapus!', `${product.name} dihapus dari keranjang`, 'warning');
+    try {
+        const product = products.find(p => p.id === productId);
+        cart = cart.filter(item => item.id !== productId);
+        updateCartCount();
+        saveCartToStorage();
+        openCart(); 
+        
+        if (product) {
+            showNotification('Dihapus!', `${product.name} dihapus dari keranjang`, 'warning');
+        }
+    } catch (error) {
+        console.error('Error removing from cart:', error);
+    }
 }
-
 
 function checkout() {
-    if (cart.length === 0) {
-        showNotification('Perhatian!', 'Keranjang masih kosong', 'warning');
-        return;
-    }
+    try {
+        if (cart.length === 0) {
+            showNotification('Perhatian!', 'Keranjang masih kosong', 'warning');
+            return;
+        }
 
-   
-    const cartData = encodeURIComponent(JSON.stringify(cart));
-    
-  
-    window.location.href = `transaksi.html?cart=${cartData}`;
+        const cartData = encodeURIComponent(JSON.stringify(cart));
+        window.location.href = `transaksi.html?cart=${cartData}`;
+    } catch (error) {
+        console.error('Error during checkout:', error);
+        showNotification('Error!', 'Terjadi kesalahan saat checkout', 'warning');
+    }
 }
 
-
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+function saveCartToStorage() {
+    try {
+        if (typeof(Storage) !== "undefined") {
+            localStorage.setItem('sepeda_cart', JSON.stringify(cart));
         }
-    });
-});
+    } catch (error) {
+        console.error('Error saving cart to storage:', error);
+    }
+}
 
-
-window.onclick = function(event) {
-    const modal = document.getElementById('cartModal');
-    if (event.target === modal) {
-        closeCart();
+function loadCartFromStorage() {
+    try {
+        if (typeof(Storage) !== "undefined") {
+            const savedCart = localStorage.getItem('sepeda_cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading cart from storage:', error);
+        cart = []; 
     }
 }
 
@@ -449,21 +567,34 @@ function shopAgain() {
     try {
         cart = [];
         updateCartCount();
-        
-        if (typeof(Storage) !== "undefined") {
-            localStorage.removeItem('cart');
-            localStorage.removeItem('currentOrder');
-        }
-        
+        saveCartToStorage();
         window.location.href = 'index.html';
-        
     } catch (error) {
-        console.error('Redirect error:', error);
-        
-        try {
-            window.location.assign('index.html');
-        } catch (secondError) {
-            window.location.replace('index.html');
-        }
+        console.error('Error in shopAgain:', error);
+        cart = [];
+        updateCartCount();
+        saveCartToStorage();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+
+window.onclick = function(event) {
+    const modal = document.getElementById('cartModal');
+    if (event.target === modal) {
+        closeCart();
     }
 }

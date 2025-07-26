@@ -4,49 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toko Sepeda Sentosa - Sepeda Berkualitas Terpercaya</title>
+    <meta name="description" content="Toko Sepeda Sentosa menyediakan sepeda berkualitas tinggi dengan harga terjangkau. Sepeda gunung, lipat, road bike, dan sepeda anak tersedia.">
+    <meta name="keywords" content="sepeda, toko sepeda, sepeda gunung, sepeda lipat, sepeda anak, road bike">
+    
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
 </head>
-<script>
-  const menuToggle = document.getElementById('menuToggle');
-  const navMenu = document.getElementById('navMenu');
-
-  menuToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('show');
-  });
-</script>
 
 <body>
-   <header class="header">
-  <a href="#" class="logo">
-    <i class="fas fa-bicycle"></i> Toko Sepeda Sentosa
-  </a>
+    <header class="header">
+        <a href="#" class="logo" aria-label="Toko Sepeda Sentosa - Beranda">
+            <i class="fas fa-bicycle" aria-hidden="true"></i> 
+            Toko Sepeda Sentosa
+        </a>
 
-  <nav class="nav">
-    <ul class="nav-menu" id="navMenu">
-      <li><a href="#products">Produk</a></li>
-      <li><a href="#about">Tentang Kami</a></li>
-      <li><a href="#contact">Kontak</a></li>
-    </ul>
-    <div class="menu-toggle" id="menuToggle">
-      <i class="fas fa-bars"></i>
-    </div>
-  </nav>
+        <nav class="nav">
+            <ul class="nav-menu" id="navMenu" role="menubar">
+                <li role="none"><a href="#products" role="menuitem">Produk</a></li>
+                <li role="none"><a href="#about" role="menuitem">Tentang Kami</a></li>
+                <li role="none"><a href="#contact" role="menuitem">Kontak</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+        </nav>
 
-  <div style="display: flex; align-items: center; gap: 1rem;">
-  <div class="profile-photo">
-    <img src="images/profil.jpg" alt="Foto Profil">
-  </div>
-  <div class="cart-icon-wrapper" onclick="openCart()">
-    <i class="fas fa-shopping-cart cart-icon"></i>
-    <span class="cart-count" id="cartCount">0</span>
-  </div>
-</div>
-
-</header>
-
-
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="profile-photo">
+                <img src="images/profil.jpg" alt="Foto Profil Pemilik Toko" loading="lazy">
+            </div>
+            <button class="cart-icon-wrapper" onclick="openCart()" aria-label="Buka Keranjang Belanja">
+                <i class="fas fa-shopping-cart cart-icon" aria-hidden="true"></i>
+                <span class="cart-count" id="cartCount" aria-label="Jumlah item di keranjang">0</span>
+            </button>
+        </div>
+    </header>
 
     <section class="hero">
         <div class="hero-content">
@@ -56,31 +54,50 @@
         </div>
     </section>
 
-    <div class="container">
+    <main class="container">
         <section class="filter-section" id="products">
             <h2 class="filter-title">Kategori Sepeda</h2>
-            <div class="filter-buttons">
-                <button class="filter-btn active" onclick="filterProducts('all')">Semua Produk</button>
-                <button class="filter-btn" onclick="filterProducts('gunung')">Sepeda Gunung</button>
-                <button class="filter-btn" onclick="filterProducts('lipat')">Sepeda Lipat</button>
-                <button class="filter-btn" onclick="filterProducts('road')">Sepeda Road</button>
-                <button class="filter-btn" onclick="filterProducts('anak')">Sepeda Anak</button>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Cari sepeda berdasarkan nama, kategori, atau deskripsi..." aria-label="Cari produk sepeda">
+                <i class="fas fa-search" aria-hidden="true"></i>
+            </div>
+            
+            <div class="filter-buttons" role="group" aria-label="Filter kategori produk">
+                <button class="filter-btn active" onclick="filterProducts('all')" aria-pressed="true">
+                    Semua Produk
+                </button>
+                <button class="filter-btn" onclick="filterProducts('gunung')" aria-pressed="false">
+                    Sepeda Gunung
+                </button>
+                <button class="filter-btn" onclick="filterProducts('lipat')" aria-pressed="false">
+                    Sepeda Lipat
+                </button>
+                <button class="filter-btn" onclick="filterProducts('road')" aria-pressed="false">
+                    Sepeda Road
+                </button>
+                <button class="filter-btn" onclick="filterProducts('anak')" aria-pressed="false">
+                    Sepeda Anak
+                </button>
             </div>
         </section>
 
-        <div class="product-grid" id="productGrid">
-        </div>
-    </div>
+        <section class="product-grid" id="productGrid" aria-label="Daftar produk sepeda">
+            
+        </section>
+    </main>
 
+  
     <section id="about" class="container">
         <div class="filter-section">
             <h2 class="filter-title">Tentang Toko Sepeda Sentosa</h2>
             <p>Toko Sepeda Sentosa telah melayani pecinta sepeda di Indonesia sejak 2010. Kami berkomitmen untuk menyediakan sepeda berkualitas tinggi dengan pelayanan terbaik. Dengan pengalaman lebih dari 15 tahun, kami memahami kebutuhan setiap pelanggan dan menawarkan solusi terbaik untuk setiap petualangan bersepeda Anda.</p>
+            
             <div style="margin-top: 2rem; text-align: center;">
                 <h3>Deandra Wahyudrian</h3>
-                <p>Pemilik & Founder</p>
-                <p>Email: deandra.10521054@gmail.com</p>
-                <p>Nim: 10521054</p>
+                <p><strong>Pemilik & Founder</strong></p>
+                <p><i class="fas fa-envelope" aria-hidden="true"></i> Email: deandra.10521054@gmail.com</p>
+                <p><i class="fas fa-id-card" aria-hidden="true"></i> NIM: 10521054</p>
             </div>
         </div>
     </section>
@@ -89,42 +106,85 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>Kontak Kami</h3>
-                <p><i class="fas fa-map-marker-alt"></i> Jl. Pasar Baru No. 88, Majalaya</p>
-                <p><i class="fas fa-phone"></i> +62 812 3456 7890</p>
-                <p><i class="fas fa-envelope"></i> deandra.10521054@gmail.com</p>
+                <p><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Jl. Pasar Baru No. 88, Majalaya</p>
+                <p><i class="fas fa-phone" aria-hidden="true"></i> +62 812 3456 7890</p>
+                <p><i class="fas fa-envelope" aria-hidden="true"></i> deandra.10521054@gmail.com</p>
             </div>
             <div class="footer-section">
                 <h3>Jam Operasional</h3>
-                <p>Senin - Jumat: 08:00 - 17:00</p>
-                <p>Sabtu: 08:00 - 15:00</p>
-                <p>Minggu: Tutup</p>
+                <p><i class="fas fa-clock" aria-hidden="true"></i> Senin - Jumat: 08:00 - 17:00</p>
+                <p><i class="fas fa-clock" aria-hidden="true"></i> Sabtu: 08:00 - 15:00</p>
+                <p><i class="fas fa-times-circle" aria-hidden="true"></i> Minggu: Tutup</p>
             </div>
             <div class="footer-section">
                 <h3>Ikuti Kami</h3>
                 <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#" aria-label="Facebook Toko Sepeda Sentosa"><i class="fab fa-facebook" aria-hidden="true"></i></a>
+                    <a href="#" aria-label="Instagram Toko Sepeda Sentosa"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                    <a href="#" aria-label="Twitter Toko Sepeda Sentosa"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                    <a href="#" aria-label="YouTube Toko Sepeda Sentosa"><i class="fab fa-youtube" aria-hidden="true"></i></a>
                 </div>
             </div>
         </div>
-        <div style="border-top: 1px solid #34495e; padding-top: 1rem; margin-top: 2rem;">
+        <div style="border-top: 1px solid #34495e; padding-top: 1rem; margin-top: 2rem; text-align: center;">
             <p>&copy; 2025 Toko Sepeda Sentosa. All rights reserved.</p>
         </div>
     </footer>
 
-  <div id="cartModal" class="modal">
-  <div class="modal-content">
-    <div class="cart-header">
-      <h2>Keranjang Belanja</h2>
-      <span class="close" onclick="closeCart()">&times;</span>
+    <div id="cartModal" class="modal" role="dialog" aria-labelledby="cartTitle" aria-hidden="true">
+        <div class="modal-content">
+            <div class="cart-header">
+                <h2 id="cartTitle">Keranjang Belanja</h2>
+                <button class="close" onclick="closeCart()" aria-label="Tutup keranjang belanja">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div id="cartItems" class="cart-items" aria-label="Daftar item di keranjang">
+            
+            </div>
+            <div class="cart-total" id="cartTotal" aria-label="Total harga">
+                Total: Rp 0
+            </div>
+            <button class="checkout-btn" onclick="checkout()">
+                <i class="fas fa-credit-card" aria-hidden="true"></i> Checkout
+            </button>
+        </div>
     </div>
-    <div id="cartItems" class="cart-items"></div>
-    <div class="cart-total" id="cartTotal">Total: Rp 0</div>
-    <button class="checkout-btn" onclick="checkout()">Checkout</button>
-  </div>
-</div>
+
+    <div id="loadingIndicator" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+        <div style="padding: 2rem; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #1d3557; margin-bottom: 1rem;"></i>
+            <p>Memuat...</p>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Store",
+        "name": "Toko Sepeda Sentosa",
+        "description": "Toko sepeda berkualitas tinggi dengan pelayanan terbaik sejak 2010",
+        "url": "https://tokosepeda-sentosa.com",
+        "telephone": "+62-812-3456-7890",
+        "email": "deandra.10521054@gmail.com",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Jl. Pasar Baru No. 88",
+            "addressLocality": "Majalaya",
+            "addressCountry": "ID"
+        },
+        "openingHours": [
+            "Mo-Fr 08:00-17:00",
+            "Sa 08:00-15:00"
+        ],
+        "paymentAccepted": "Cash, Credit Card, Bank Transfer, E-Wallet",
+        "founder": {
+            "@type": "Person",
+            "name": "Deandra Wahyudrian"
+        }
+    }
+    </script>
 </body>
 </html>
