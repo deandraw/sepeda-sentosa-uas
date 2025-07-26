@@ -226,36 +226,27 @@
           </select>
         </div>
 
-        <div class="form-group">
-          <label>Metode Pembayaran *</label>
-          <div class="payment-options">
-            <label class="payment-option">
-              <input type="radio" name="payment" value="transfer" required />
-              <img src="images/pay-transfer.png" alt="Transfer Bank">
-            </label>
-            <label class="payment-option">
-              <input type="radio" name="payment" value="cod" required />
-              <img src="images/pay-cod.png" alt="COD">
-            </label>
-            <label class="payment-option">
-              <input type="radio" name="payment" value="ewallet" required />
-              <img src="images/pay-ewallet.png" alt="E-Wallet">
-            </label>
-            <label class="payment-option">
-              <input type="radio" name="payment" value="credit" required />
-              <img src="images/pay-credit.png" alt="Kartu Kredit">
-            </label>
-          </div>
-        </div>
+  <div class="form-group">
+  <label for="payment">Pilih Metode Pembayaran *</label>
+  <select name="payment" id="payment" required>
+    <option value="">-- Pilih --</option>
+    <option value="transfer">Transfer Bank</option>
+    <option value="cod">COD (Bayar di Tempat)</option>
+    <option value="ewallet">E-Wallet</option>
+    <option value="credit">Kartu Kredit</option>
+  </select>
+</div>
 
         <div class="form-group">
           <label for="notes">Catatan Tambahan</label>
           <textarea id="notes" name="notes" rows="2" placeholder="(opsional)"></textarea>
         </div>
 
-        <button type="submit" class="btn-primary">
-          <i class="fas fa-lock"></i> Proses Pembayaran
-        </button>
+       <button type="submit" class="btn-primary" id="submitBtn">
+  <span id="btnText"><i class="fas fa-lock"></i> Proses Pembayaran</span>
+  <span id="btnLoading" style="display: none;"><i class="fas fa-spinner fa-spin"></i> Memproses...</span>
+</button>
+
       </form>
 
       <div class="order-summary">

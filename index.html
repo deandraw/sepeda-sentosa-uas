@@ -34,10 +34,16 @@
     </div>
   </nav>
 
+  <div style="display: flex; align-items: center; gap: 1rem;">
+  <div class="profile-photo">
+    <img src="images/profil.jpg" alt="Foto Profil">
+  </div>
   <div class="cart-icon-wrapper" onclick="openCart()">
     <i class="fas fa-shopping-cart cart-icon"></i>
     <span class="cart-count" id="cartCount">0</span>
   </div>
+</div>
+
 </header>
 
 
@@ -119,9 +125,6 @@
     <button class="checkout-btn" onclick="checkout()">Checkout</button>
   </div>
 </div>
-
-    </div>
-
     <script src="script.js"></script>
 </body>
 </html>
