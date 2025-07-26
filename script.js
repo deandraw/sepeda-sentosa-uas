@@ -1,4 +1,3 @@
-
 const products = [
     {
         id: 1,
@@ -14,7 +13,7 @@ const products = [
         price: 5500000,
         category: "gunung",
         image: "images/sepeda2.jpg", 
-        description: "Sepeda gunung profesional dengan sistem suspensi canggih untuk petualangan ekstrim."
+        description: "Sepeda gunung profesional dengan sistem suspensi canggih untuk petualangan ekstrem."
     },
     {
         id: 3,
@@ -71,7 +70,32 @@ const products = [
         category: "road",
         image: "images/sepeda9.jpg", 
         description: "Sepeda road bike profesional dengan frame carbon fiber dan komponen balap berkualitas tinggi untuk kecepatan maksimal."
-    }
+    },
+    {
+        id: 10,
+        name: "Polygon Urbano 3",
+        price: 3900000,
+        category: "lipat",
+        image: "images/sepeda10.jpg",
+        description: "Sepeda lipat ringan dengan desain modern dan kompak, cocok untuk mobilitas perkotaan."
+   },
+   {
+        id: 11,
+        name: "Giant Contend SL 2",
+        price: 9500000,
+        category: "road",
+        image: "images/sepeda11.jpg",
+        description: "Road bike performa tinggi dengan frame aluminium ALUXX dan teknologi OverDrive."
+   },
+   {
+        id: 12,
+        name: "Specialized Allez E5",
+        price: 12500000,
+        category: "road",
+        image: "images/sepeda12.jpg",
+        description: "Sepeda balap ringan dan kaku, ideal untuk pemula hingga menengah yang ingin kecepatan maksimal."
+}
+
     
 
 ];
@@ -328,44 +352,53 @@ function updateCartCount() {
     cartCount.textContent = totalItems;
 }
 
-
 function openCart() {
-    const modal = document.getElementById('cartModal');
-    const cartItems = document.getElementById('cartItems');
-    const cartTotal = document.getElementById('cartTotal');
+  const modal = document.getElementById('cartModal');
+  const cartItems = document.getElementById('cartItems');
+  const cartTotal = document.getElementById('cartTotal');
 
-    cartItems.innerHTML = '';
-    let total = 0;
+  if (!modal || !cartItems || !cartTotal) return;
 
-    if (cart.length === 0) {
-        cartItems.innerHTML = '<p style="text-align: center; padding: 2rem;">Keranjang kosong</p>';
-    } else {
-        cart.forEach(item => {
-            total += item.price * item.quantity;
-            cartItems.innerHTML += `
-                <div class="cart-item">
-                    <div>
-                        <h4>${item.name}</h4>
-                        <p>Rp ${item.price.toLocaleString('id-ID')} x ${item.quantity}</p>
-                    </div>
-                    <div>
-                        <button onclick="removeFromCart(${item.id})" class="btn-secondary">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-    }
+  cartItems.innerHTML = '';
+  let total = 0;
 
-    cartTotal.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
-    modal.style.display = 'block';
+  if (cart.length === 0) {
+    cartItems.innerHTML = '<p style="text-align:center; padding: 2rem; color: #888;">Keranjang kosong</p>';
+  } else {
+    cart.forEach(item => {
+      total += item.price * item.quantity;
+      cartItems.innerHTML += `
+        <div class="cart-item">
+          <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+          <div>
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-info">${item.quantity} x Rp ${item.price.toLocaleString('id-ID')}</div>
+          </div>
+          <button onclick="removeFromCart(${item.id})" class="cart-item-remove">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `;
+    });
+  }
+
+  cartTotal.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
+  modal.classList.add('show');
 }
 
+{
+
+  cartTotal.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
+  modal.classList.add('show');
+}
 
 function closeCart() {
-    document.getElementById('cartModal').style.display = 'none';
+  const modal = document.getElementById('cartModal');
+  if (modal) {
+    modal.classList.remove('show');
+  }
 }
+
 
 
 function removeFromCart(productId) {
@@ -409,5 +442,28 @@ window.onclick = function(event) {
     const modal = document.getElementById('cartModal');
     if (event.target === modal) {
         closeCart();
+    }
+}
+
+function shopAgain() {
+    try {
+        cart = [];
+        updateCartCount();
+        
+        if (typeof(Storage) !== "undefined") {
+            localStorage.removeItem('cart');
+            localStorage.removeItem('currentOrder');
+        }
+        
+        window.location.href = 'index.html';
+        
+    } catch (error) {
+        console.error('Redirect error:', error);
+        
+        try {
+            window.location.assign('index.html');
+        } catch (secondError) {
+            window.location.replace('index.html');
+        }
     }
 }
